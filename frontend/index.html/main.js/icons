@@ -1,0 +1,40 @@
+// main.js
+
+document.addEventListener("DOMContentLoaded", () => {
+  const sendBtn = document.getElementById("sendBtn");
+  const userQuery = document.getElementById("userQuery");
+  const responseContainer = document.getElementById("responseContainer");
+
+  // Function to send query to API
+  const sendQuery = async () => {
+    const prompt = userQuery.value.trim();
+    if (!prompt) return;
+
+    // Show loading
+    responseContainer.innerHTML = "<p>Loading...</p>";
+
+    try {
+      const res = await fetch("/api/queryAssistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await res.json();
+      responseContainer.innerHTML = `<p>${data.text}</p>`;
+    } catch (err) {
+      console.error("Error:", err);
+      responseContainer.innerHTML = "<p>Something went wrong. Try again!</p>";
+    }
+
+    userQuery.value = "";
+  };
+
+  // Trigger on button click
+  sendBtn.addEventListener("click", sendQuery);
+
+  // Trigger on Enter key
+  userQuery.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendQuery();
+  });
+});
